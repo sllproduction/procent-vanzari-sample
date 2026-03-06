@@ -12,6 +12,8 @@ const state = {
     card_detected: null,
     total_detected: null,
   },
+  reports: [],
+  calendarCursor: null,
 };
 
 const currencyFormatter = new Intl.NumberFormat("ro-RO", {
@@ -19,6 +21,11 @@ const currencyFormatter = new Intl.NumberFormat("ro-RO", {
   currency: "RON",
   minimumFractionDigits: 2,
   maximumFractionDigits: 2,
+});
+
+const monthFormatter = new Intl.DateTimeFormat("ro-RO", {
+  month: "long",
+  year: "numeric",
 });
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -37,11 +44,8 @@ async function initApp() {
   setDefaultDates();
   bindEvents();
 
-  await Promise.all([
-    loadSettings(),
-    loadHistory(),
-    loadMonthSummary(),
-  ]);
+  await Promise.all([loadSettings(), loadHistory(), loadMonthSummary()]);
+  renderCalendar();
 }
 
 function bindEvents() {
@@ -51,10 +55,25 @@ function bindEvents() {
   byId("cashInput").addEventListener("input", updateConsistencyHint);
   byId("cardInput").addEventListener("input", updateConsistencyHint);
   byId("totalInput").addEventListener("input", updateConsistencyHint);
+  byId("workDate").addEventListener("change", renderCalendar);
   byId("summaryMonth").addEventListener("change", () => {
+    syncCalendarToSummaryMonth();
+    renderCalendar();
     loadMonthSummary().catch((error) => {
       console.error(error);
       showToast(error.message || "Nu am putut incarca rezumatul lunar.", "error");
+    });
+  });
+  byId("calendarPrevBtn").addEventListener("click", () => {
+    shiftCalendarMonth(-1).catch((error) => {
+      console.error(error);
+      showToast(error.message || "Nu am putut schimba luna.", "error");
+    });
+  });
+  byId("calendarNextBtn").addEventListener("click", () => {
+    shiftCalendarMonth(1).catch((error) => {
+      console.error(error);
+      showToast(error.message || "Nu am putut schimba luna.", "error");
     });
   });
   byId("settingsForm").addEventListener("submit", onSettingsSubmit);
@@ -73,6 +92,7 @@ function setDefaultDates() {
   const today = getTodayIsoDate();
   byId("workDate").value = today;
   byId("summaryMonth").value = today.slice(0, 7);
+  state.calendarCursor = parseMonthToDate(today.slice(0, 7));
 }
 
 function onImageSelected(event) {
@@ -281,10 +301,12 @@ async function onSaveSubmit(event) {
 async function loadHistory() {
   const data = await apiRequest("/api/history?limit=100", { method: "GET" });
   const rows = Array.isArray(data.reports) ? data.reports : [];
+  state.reports = rows;
   const list = byId("historyList");
 
   if (rows.length === 0) {
     list.innerHTML = '<li class="history-empty">Nu exista rapoarte salvate inca.</li>';
+    renderCalendar();
     return;
   }
 
@@ -305,6 +327,142 @@ async function loadHistory() {
       `;
     })
     .join("");
+
+  renderCalendar();
+}
+
+function syncCalendarToSummaryMonth() {
+  const monthValue = byId("summaryMonth").value;
+  if (!isValidMonthValue(monthValue)) {
+    return;
+  }
+  state.calendarCursor = parseMonthToDate(monthValue);
+}
+
+async function shiftCalendarMonth(delta) {
+  if (!state.calendarCursor) {
+    syncCalendarToSummaryMonth();
+  }
+  if (!state.calendarCursor) {
+    state.calendarCursor = parseMonthToDate(getTodayIsoDate().slice(0, 7));
+  }
+
+  state.calendarCursor = new Date(
+    state.calendarCursor.getFullYear(),
+    state.calendarCursor.getMonth() + delta,
+    1,
+  );
+
+  byId("summaryMonth").value = toMonthValue(state.calendarCursor);
+  renderCalendar();
+  await loadMonthSummary();
+}
+
+function renderCalendar() {
+  const grid = byId("calendarGrid");
+  const label = byId("calendarMonthLabel");
+  const hint = byId("calendarHint");
+  const selectedWorkDate = byId("workDate").value;
+  hint.className = "inline-msg";
+  hint.textContent = "Tip: apasa pe o zi pentru a completa rapid campul Data.";
+
+  if (!state.calendarCursor) {
+    syncCalendarToSummaryMonth();
+  }
+  if (!state.calendarCursor) {
+    state.calendarCursor = parseMonthToDate(getTodayIsoDate().slice(0, 7));
+  }
+
+  const year = state.calendarCursor.getFullYear();
+  const monthIndex = state.calendarCursor.getMonth();
+  const monthValue = toMonthValue(state.calendarCursor);
+
+  label.textContent = monthFormatter.format(new Date(year, monthIndex, 1));
+
+  const firstDay = new Date(year, monthIndex, 1);
+  const lastDay = new Date(year, monthIndex + 1, 0);
+  const leadingBlankCells = (firstDay.getDay() + 6) % 7;
+  const daysInMonth = lastDay.getDate();
+
+  const reportsByDay = new Map();
+  for (const report of state.reports) {
+    if (!report?.work_date || !report.work_date.startsWith(`${monthValue}-`)) {
+      continue;
+    }
+    const day = Number.parseInt(report.work_date.slice(8, 10), 10);
+    if (!Number.isFinite(day)) {
+      continue;
+    }
+    const existing = reportsByDay.get(day) || { count: 0, total: 0 };
+    existing.count += 1;
+    existing.total += Number(report.total_confirmed) || 0;
+    reportsByDay.set(day, existing);
+  }
+
+  const todayIso = getTodayIsoDate();
+  const cells = [];
+
+  for (let index = 0; index < leadingBlankCells; index += 1) {
+    cells.push('<span class="calendar-empty" aria-hidden="true"></span>');
+  }
+
+  for (let day = 1; day <= daysInMonth; day += 1) {
+    const isoDate = `${monthValue}-${String(day).padStart(2, "0")}`;
+    const reportInfo = reportsByDay.get(day);
+    const classes = ["calendar-day"];
+
+    if (isoDate === todayIso) {
+      classes.push("today");
+    }
+    if (isoDate === selectedWorkDate) {
+      classes.push("selected");
+    }
+    if (reportInfo) {
+      classes.push("has-report");
+    }
+
+    cells.push(`
+      <button
+        type="button"
+        class="${classes.join(" ")}"
+        data-date="${isoDate}"
+        data-count="${reportInfo ? reportInfo.count : 0}"
+        data-total="${reportInfo ? roundMoney(reportInfo.total) : 0}"
+        aria-label="Data ${isoDate}"
+      >
+        <span class="day-number">${day}</span>
+        <span class="day-dot" aria-hidden="true"></span>
+      </button>
+    `);
+  }
+
+  const cellCount = leadingBlankCells + daysInMonth;
+  const trailingBlankCells = (7 - (cellCount % 7)) % 7;
+  for (let index = 0; index < trailingBlankCells; index += 1) {
+    cells.push('<span class="calendar-empty" aria-hidden="true"></span>');
+  }
+
+  grid.innerHTML = cells.join("");
+
+  grid.querySelectorAll(".calendar-day").forEach((button) => {
+    button.addEventListener("click", () => {
+      const date = button.dataset.date;
+      const count = Number.parseInt(button.dataset.count || "0", 10);
+      const total = Number.parseFloat(button.dataset.total || "0");
+
+      byId("workDate").value = date;
+      renderCalendar();
+
+      hint.className = "inline-msg";
+      if (count > 0) {
+        hint.textContent = `Ai ${count} raport(e) pe ${date}. Total confirmat: ${formatMoney(total)}.`;
+        hint.classList.add("good");
+      } else {
+        hint.textContent = `Data selectata: ${date}. Poti salva un raport nou pentru aceasta zi.`;
+      }
+    });
+  });
+
 }
 
 async function loadMonthSummary() {
@@ -500,6 +658,32 @@ function getTodayIsoDate() {
   const month = String(now.getMonth() + 1).padStart(2, "0");
   const day = String(now.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
+}
+
+function isValidMonthValue(value) {
+  if (typeof value !== "string") {
+    return false;
+  }
+  if (!/^\d{4}-\d{2}$/.test(value)) {
+    return false;
+  }
+  const month = Number.parseInt(value.slice(5, 7), 10);
+  return month >= 1 && month <= 12;
+}
+
+function parseMonthToDate(value) {
+  if (!isValidMonthValue(value)) {
+    return null;
+  }
+  const year = Number.parseInt(value.slice(0, 4), 10);
+  const month = Number.parseInt(value.slice(5, 7), 10);
+  return new Date(year, month - 1, 1);
+}
+
+function toMonthValue(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  return `${year}-${month}`;
 }
 
 function byId(id) {

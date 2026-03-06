@@ -29,9 +29,14 @@ body {
   padding: 0;
   color: var(--text);
   background:
+    radial-gradient(circle at 15% 24%, rgba(255, 215, 228, 0.44) 0 14px, transparent 15px),
+    radial-gradient(circle at 20% 30%, rgba(255, 228, 238, 0.38) 0 9px, transparent 10px),
+    radial-gradient(circle at 78% 18%, rgba(255, 222, 209, 0.4) 0 12px, transparent 13px),
+    radial-gradient(circle at 82% 24%, rgba(255, 237, 227, 0.38) 0 8px, transparent 9px),
     radial-gradient(1200px 700px at 8% -10%, #ffd9e5 0%, transparent 58%),
     radial-gradient(800px 540px at 90% -5%, #ffe8db 0%, transparent 52%),
     linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
+  background-repeat: no-repeat;
   font-family: "Manrope", "Avenir Next", "Trebuchet MS", sans-serif;
   -webkit-font-smoothing: antialiased;
 }
@@ -117,6 +122,19 @@ p {
   gap: 16px;
 }
 
+.app-wrap::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle, rgba(255, 209, 226, 0.22) 0 4px, transparent 4px),
+    radial-gradient(circle, rgba(255, 226, 210, 0.18) 0 3px, transparent 3px);
+  background-size: 62px 62px, 82px 82px;
+  background-position: 12px 18px, 38px 42px;
+}
+
 .auth-wrap {
   min-height: 100vh;
   display: grid;
@@ -158,6 +176,10 @@ p {
   animation-delay: 260ms;
 }
 
+.app-wrap > .card:nth-of-type(7) {
+  animation-delay: 300ms;
+}
+
 .topbar {
   display: flex;
   justify-content: space-between;
@@ -173,6 +195,7 @@ p {
 .topbar-card {
   background:
     radial-gradient(200px 120px at 88% 10%, #ffe0ea 0%, transparent 68%),
+    radial-gradient(140px 84px at 8% 8%, #ffedf4 0%, transparent 74%),
     linear-gradient(180deg, #fff 0%, #fff9fc 100%);
 }
 
@@ -286,6 +309,115 @@ button:disabled {
   display: grid;
   gap: 10px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.calendar-card {
+  display: grid;
+  gap: 10px;
+}
+
+.calendar-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.calendar-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.small-btn {
+  min-height: 36px;
+  min-width: 36px;
+  padding: 0;
+  border-radius: 10px;
+  font-size: 1rem;
+}
+
+.calendar-month-label {
+  min-width: 136px;
+  text-align: center;
+  font-weight: 800;
+  text-transform: capitalize;
+  color: #5c3b4c;
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.calendar-weekdays span {
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.calendar-empty {
+  min-height: 42px;
+}
+
+.calendar-day {
+  position: relative;
+  min-height: 42px;
+  padding: 0;
+  border: 1px solid #f0d7e2;
+  border-radius: 12px;
+  background: #fff;
+  color: #5a3a4a;
+  font-weight: 700;
+  box-shadow: 0 3px 10px rgba(170, 64, 103, 0.08);
+}
+
+.calendar-day:hover {
+  filter: none;
+  border-color: #e8adc3;
+}
+
+.calendar-day.today {
+  border-color: #e27a9f;
+}
+
+.calendar-day.selected {
+  background: linear-gradient(135deg, #ffe7f0 0%, #ffe2d6 100%);
+  border-color: #e783a6;
+  color: #442632;
+}
+
+.calendar-day.has-report {
+  background: linear-gradient(180deg, #fff 0%, #fff2f7 100%);
+}
+
+.day-number {
+  position: relative;
+  z-index: 1;
+}
+
+.day-dot {
+  display: none;
+  position: absolute;
+  left: 50%;
+  bottom: 5px;
+  width: 6px;
+  height: 6px;
+  margin-left: -3px;
+  border-radius: 999px;
+  background: #d94978;
+}
+
+.calendar-day.has-report .day-dot {
+  display: block;
 }
 
 .summary-item {
@@ -435,5 +567,19 @@ pre {
   .topbar {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .calendar-head {
+    flex-direction: column;
+  }
+
+  .calendar-nav {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .calendar-month-label {
+    min-width: auto;
+    flex: 1;
   }
 }

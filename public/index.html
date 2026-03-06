@@ -58,6 +58,31 @@
       </form>
     </section>
 
+    <section class="card calendar-card">
+      <div class="calendar-head">
+        <div>
+          <h2>Calendar personalizat</h2>
+          <p class="muted">Zilele salvate apar evidentiat. Apasa pe o zi pentru data rapida.</p>
+        </div>
+        <div class="calendar-nav">
+          <button id="calendarPrevBtn" type="button" class="secondary small-btn" aria-label="Luna anterioara">&lt;</button>
+          <p id="calendarMonthLabel" class="calendar-month-label">-</p>
+          <button id="calendarNextBtn" type="button" class="secondary small-btn" aria-label="Luna urmatoare">&gt;</button>
+        </div>
+      </div>
+      <div class="calendar-weekdays" aria-hidden="true">
+        <span>L</span>
+        <span>Ma</span>
+        <span>Mi</span>
+        <span>J</span>
+        <span>V</span>
+        <span>S</span>
+        <span>D</span>
+      </div>
+      <div id="calendarGrid" class="calendar-grid" role="grid"></div>
+      <p id="calendarHint" class="inline-msg"></p>
+    </section>
+
     <section class="card stack step-card">
       <h2>3) Rezumat lunar</h2>
 
