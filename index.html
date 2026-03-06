@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Procent Vanzari - Sample</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app">
+    <section class="card">
+      <h1>Calculator Procent Vanzari</h1>
+      <p class="subtitle">Sample simplu pentru calculul comisionului la final de luna.</p>
+
+      <form id="calculator-form" class="form">
+        <label for="month">Luna</label>
+        <input id="month" name="month" type="month" required>
+
+        <label for="sales">Vanzari totale (RON)</label>
+        <input id="sales" name="sales" type="number" min="0" step="0.01" placeholder="Ex: 125000" required>
+
+        <label for="percent">Procent comision (%)</label>
+        <input id="percent" name="percent" type="number" min="0" step="0.01" placeholder="Ex: 7.5" required>
+
+        <label for="advance">Avans deja platit (RON)</label>
+        <input id="advance" name="advance" type="number" min="0" step="0.01" value="0">
+
+        <div class="actions">
+          <button type="submit">Calculeaza</button>
+          <button type="button" id="clear-btn" class="secondary">Reseteaza</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="card result-card" aria-live="polite">
+      <h2>Rezultat</h2>
+      <p id="summary">Completeaza campurile si apasa "Calculeaza".</p>
+      <div class="result-grid">
+        <article>
+          <h3>Comision brut</h3>
+          <p id="commission">-</p>
+        </article>
+        <article>
+          <h3>Avans</h3>
+          <p id="advance-view">-</p>
+        </article>
+        <article>
+          <h3>De platit la final</h3>
+          <p id="payout">-</p>
+        </article>
+      </div>
+      <p id="note" class="note"></p>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

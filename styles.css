@@ -1,0 +1,145 @@
+:root {
+  --bg: #f4f6f8;
+  --surface: #ffffff;
+  --text: #15202b;
+  --muted: #5f6c7b;
+  --primary: #0c7a6f;
+  --primary-strong: #085f56;
+  --border: #d8dee4;
+  --good: #0f7a3f;
+  --warn: #b02a37;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  background: radial-gradient(circle at top right, #e4f5f2, transparent 35%), var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+.app {
+  max-width: 980px;
+  margin: 32px auto;
+  padding: 0 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 6px 24px rgba(21, 32, 43, 0.06);
+}
+
+h1, h2 {
+  margin-top: 0;
+}
+
+.subtitle {
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+
+.form {
+  display: grid;
+  gap: 10px;
+}
+
+label {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+input {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 1rem;
+}
+
+input:focus {
+  outline: 2px solid #7bc9be;
+  border-color: #7bc9be;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+button {
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button[type="submit"] {
+  background: var(--primary);
+  color: #fff;
+}
+
+button[type="submit"]:hover {
+  background: var(--primary-strong);
+}
+
+.secondary {
+  background: #eef2f5;
+  color: var(--text);
+}
+
+.result-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.result-grid article {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  background: #fafbfc;
+}
+
+.result-grid h3 {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+.result-grid p {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.note {
+  margin-top: 12px;
+  min-height: 20px;
+  font-size: 0.95rem;
+}
+
+.good {
+  color: var(--good);
+}
+
+.warn {
+  color: var(--warn);
+}
+
+@media (max-width: 640px) {
+  .app {
+    margin: 20px auto;
+  }
+}
