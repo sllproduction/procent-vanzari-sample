@@ -1,0 +1,14 @@
+name = "procent-vanzari-mvp"
+main = "src/index.js"
+compatibility_date = "2026-03-06"
+
+assets = { directory = "./public", binding = "ASSETS" }
+
+[vars]
+ENVIRONMENT = "production"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "procent_vanzari_db"
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
+migrations_dir = "migrations"

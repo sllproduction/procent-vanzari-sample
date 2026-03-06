@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Login | Raport Barista</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body data-page="login">
+  <main class="auth-wrap">
+    <section class="card auth-card">
+      <h1>Raport Barista</h1>
+      <p class="muted">Autentificare pentru salvare rapoarte zilnice.</p>
+
+      <form id="loginForm" class="stack">
+        <label for="password">Parola</label>
+        <input id="password" type="password" autocomplete="current-password" required>
+        <button id="loginBtn" type="submit">Intra in aplicatie</button>
+      </form>
+
+      <p id="loginMessage" class="inline-msg" aria-live="polite"></p>
+    </section>
+  </main>
+
+  <script>
+    const loginForm = document.getElementById("loginForm");
+    const loginBtn = document.getElementById("loginBtn");
+    const loginMessage = document.getElementById("loginMessage");
+    const passwordInput = document.getElementById("password");
+
+    function setLoginMessage(text, type) {
+      loginMessage.textContent = text || "";
+      loginMessage.className = "inline-msg";
+      if (type === "error") loginMessage.classList.add("warn");
+      if (type === "success") loginMessage.classList.add("good");
+    }
+
+    async function checkExistingSession() {
+      try {
+        const res = await fetch("/api/me", { method: "GET" });
+        const data = await res.json();
+        if (data && data.authenticated) {
+          window.location.href = "/";
+        }
+      } catch {
+        setLoginMessage("Conexiune indisponibila. Incearca din nou.", "error");
+      }
+    }
+
+    loginForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const password = passwordInput.value.trim();
+      if (!password) {
+        setLoginMessage("Introdu parola.", "error");
+        return;
+      }
+
+      loginBtn.disabled = true;
+      loginBtn.textContent = "Se verifica...";
+      setLoginMessage("");
+
+      try {
+        const res = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password }),
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          setLoginMessage(data.error || "Autentificare esuata.", "error");
+          return;
+        }
+
+        setLoginMessage("Login reusit. Redirectionare...", "success");
+        window.location.href = "/";
+      } catch {
+        setLoginMessage("Eroare de retea. Incearca din nou.", "error");
+      } finally {
+        loginBtn.disabled = false;
+        loginBtn.textContent = "Intra in aplicatie";
+      }
+    });
+
+    checkExistingSession();
+  </script>
+</body>
+</html>

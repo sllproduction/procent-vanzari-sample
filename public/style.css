@@ -1,0 +1,280 @@
+:root {
+  --bg: #f3f5f8;
+  --surface: #ffffff;
+  --border: #dbe1ea;
+  --text: #12202f;
+  --muted: #5d6d7f;
+  --primary: #0e7f71;
+  --primary-strong: #096257;
+  --warn: #b12c39;
+  --good: #0f7a3e;
+  --shadow: 0 8px 24px rgba(14, 33, 52, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  color: var(--text);
+  background: linear-gradient(180deg, #eef6f4 0%, var(--bg) 35%);
+}
+
+body {
+  min-height: 100vh;
+}
+
+h1, h2, h3 {
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.app-wrap,
+.auth-wrap {
+  width: min(760px, 100%);
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.app-wrap {
+  display: grid;
+  gap: 14px;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 6px 0;
+}
+
+.topbar h1 {
+  font-size: 1.3rem;
+  margin-bottom: 6px;
+}
+
+.auth-wrap {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+}
+
+.auth-card {
+  width: min(460px, 100%);
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: var(--shadow);
+}
+
+.stack {
+  display: grid;
+  gap: 10px;
+}
+
+label {
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+input,
+textarea,
+button {
+  font: inherit;
+}
+
+input,
+textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  min-height: 44px;
+  background: #fff;
+}
+
+input:focus,
+textarea:focus {
+  outline: 2px solid #8fd5cc;
+  border-color: #8fd5cc;
+}
+
+button {
+  min-height: 44px;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 700;
+  background: var(--primary);
+  color: #fff;
+  cursor: pointer;
+}
+
+button:hover {
+  background: var(--primary-strong);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.secondary {
+  background: #eaf0f5;
+  color: var(--text);
+}
+
+.secondary:hover {
+  background: #dfe8f0;
+}
+
+.preview {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  max-height: 320px;
+  object-fit: contain;
+  background: #f7f9fb;
+}
+
+.summary-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.summary-item {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+  background: #fafbfd;
+}
+
+.summary-item h3 {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.summary-item p {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.inline-msg {
+  font-size: 0.9rem;
+  min-height: 20px;
+}
+
+.inline-msg.warn {
+  color: var(--warn);
+}
+
+.inline-msg.good {
+  color: var(--good);
+}
+
+.history-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.history-item {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+  background: #fafbfd;
+}
+
+.history-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.history-values {
+  font-size: 0.92rem;
+  color: var(--muted);
+}
+
+.history-notes {
+  margin-top: 6px;
+  font-size: 0.9rem;
+}
+
+.history-empty {
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  color: var(--muted);
+  background: #fafbfd;
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  width: min(92vw, 520px);
+  border-radius: 10px;
+  padding: 12px 14px;
+  background: #102438;
+  color: #fff;
+  box-shadow: var(--shadow);
+  z-index: 1000;
+  font-size: 0.95rem;
+}
+
+.toast.good {
+  background: #0f6d3a;
+}
+
+.toast.warn {
+  background: #9f2330;
+}
+
+.hidden {
+  display: none !important;
+}
+
+pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 240px;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+  background: #f8fafc;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 420px) {
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .topbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

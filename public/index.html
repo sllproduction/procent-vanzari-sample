@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Raport Zilnic | Barista</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body data-page="app">
+  <main class="app-wrap">
+    <header class="topbar">
+      <div>
+        <h1>Raport zilnic barista</h1>
+        <p class="muted">Incarca o poza, verifica valorile, apoi confirma salvarea.</p>
+      </div>
+      <button id="logoutBtn" class="secondary">Logout</button>
+    </header>
+
+    <section class="card stack">
+      <h2>1) Upload poza si analiza OCR</h2>
+      <label for="imageInput">Poza zilei (bon cash + bon card + total scris)</label>
+      <input id="imageInput" type="file" accept="image/*" capture="environment">
+
+      <img id="imagePreview" class="preview hidden" alt="Preview poza incarcat" />
+
+      <button id="analyzeBtn" type="button" disabled>Analizeaza poza</button>
+      <div id="analyzeWarnings" class="inline-msg"></div>
+
+      <details id="debugBox" class="hidden">
+        <summary>OCR text (debug)</summary>
+        <pre id="ocrDebug"></pre>
+      </details>
+    </section>
+
+    <section class="card stack">
+      <h2>2) Confirma valorile si salveaza</h2>
+
+      <form id="saveForm" class="stack">
+        <label for="workDate">Data</label>
+        <input id="workDate" type="date" required>
+
+        <label for="cashInput">Cash confirmat (RON)</label>
+        <input id="cashInput" type="text" inputmode="decimal" placeholder="Ex: 250.50" required>
+
+        <label for="cardInput">Card confirmat (RON)</label>
+        <input id="cardInput" type="text" inputmode="decimal" placeholder="Ex: 430.00" required>
+
+        <label for="totalInput">Total confirmat (RON)</label>
+        <input id="totalInput" type="text" inputmode="decimal" placeholder="Ex: 680.50" required>
+
+        <label for="notesInput">Note</label>
+        <textarea id="notesInput" rows="3" maxlength="1000" placeholder="Optional"></textarea>
+
+        <p id="consistencyHint" class="inline-msg"></p>
+
+        <button id="saveBtn" type="submit">Confirma si salveaza</button>
+      </form>
+    </section>
+
+    <section class="card stack">
+      <h2>3) Rezumat lunar</h2>
+
+      <label for="summaryMonth">Luna</label>
+      <input id="summaryMonth" type="month">
+
+      <div class="summary-grid">
+        <article class="summary-item">
+          <h3>Total confirmat</h3>
+          <p id="monthlyTotal">-</p>
+        </article>
+        <article class="summary-item">
+          <h3>Comision (%)</h3>
+          <p id="monthlyCommissionPercent">-</p>
+        </article>
+        <article class="summary-item">
+          <h3>Comision (RON)</h3>
+          <p id="monthlyCommissionAmount">-</p>
+        </article>
+        <article class="summary-item">
+          <h3>Zile salvate</h3>
+          <p id="monthlyCount">-</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="card stack">
+      <h2>Setari</h2>
+      <form id="settingsForm" class="stack">
+        <label for="commissionInput">Comision procent (%)</label>
+        <input id="commissionInput" type="text" inputmode="decimal" required>
+        <button id="saveSettingsBtn" type="submit" class="secondary">Salveaza comisionul</button>
+      </form>
+    </section>
+
+    <section class="card stack">
+      <h2>Istoric rapoarte</h2>
+      <ul id="historyList" class="history-list"></ul>
+    </section>
+  </main>
+
+  <div id="toast" class="toast hidden" aria-live="polite"></div>
+
+  <script src="/app.js" defer></script>
+</body>
+</html>
