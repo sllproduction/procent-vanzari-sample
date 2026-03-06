@@ -188,8 +188,8 @@ async function handleMe(request, env) {
 }
 
 async function handleAnalyze(request, env) {
-  if (!env.GOOGLE_VISION_API_KEY) {
-    return json({ error: "Missing GOOGLE_VISION_API_KEY secret" }, 500);
+  if (!env.OCR_SPACE_API_KEY) {
+    return json({ error: "Missing OCR_SPACE_API_KEY secret" }, 500);
   }
 
   let formData;
@@ -225,7 +225,11 @@ async function handleAnalyze(request, env) {
   try {
     const imageBuffer = await image.arrayBuffer();
     const imageBase64 = arrayBufferToBase64(imageBuffer);
-    const ocrText = await requestVisionOcr(imageBase64, env.GOOGLE_VISION_API_KEY);
+    const ocrText = await requestOcrSpace(
+      imageBase64,
+      image.type,
+      env.OCR_SPACE_API_KEY,
+    );
     const inferred = inferReceiptValues(ocrText);
 
     const responsePayload = {
@@ -416,50 +420,64 @@ async function handleUpdateSettings(request, env) {
   }
 }
 
-async function requestVisionOcr(imageBase64, apiKey) {
-  const response = await fetch(
-    `https://vision.googleapis.com/v1/images:annotate?key=${encodeURIComponent(apiKey)}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        requests: [
-          {
-            image: { content: imageBase64 },
-            features: [{ type: "DOCUMENT_TEXT_DETECTION" }],
-            imageContext: {
-              languageHints: ["ro", "en"],
-            },
-          },
-        ],
-      }),
+async function requestOcrSpace(imageBase64, imageType, apiKey) {
+  const fileType = imageTypeToFileType(imageType);
+  const formData = new FormData();
+  formData.set("base64Image", `data:${imageType};base64,${imageBase64}`);
+  formData.set("language", "eng");
+  formData.set("isOverlayRequired", "false");
+  formData.set("OCREngine", "2");
+  formData.set("scale", "true");
+  if (fileType) {
+    formData.set("filetype", fileType);
+  }
+
+  const response = await fetch("https://api.ocr.space/parse/image", {
+    method: "POST",
+    headers: {
+      apikey: apiKey,
     },
-  );
+    body: formData,
+  });
 
   if (!response.ok) {
-    throw new Error(`Vision API HTTP ${response.status}`);
+    throw new Error(`OCR.Space HTTP ${response.status}`);
   }
 
   const payload = await response.json();
-  const firstResult = payload?.responses?.[0];
-
-  if (payload?.error?.message) {
-    throw new Error(payload.error.message);
+  if (payload?.IsErroredOnProcessing) {
+    const detailText =
+      typeof payload?.ErrorDetails === "string" ? payload.ErrorDetails : "";
+    const messages = [
+      ...(Array.isArray(payload?.ErrorMessage) ? payload.ErrorMessage : []),
+      ...(Array.isArray(payload?.ErrorDetails) ? payload.ErrorDetails : []),
+      detailText,
+    ]
+      .filter(Boolean)
+      .join(" | ");
+    throw new Error(messages || "OCR.Space processing failed");
   }
 
-  if (!firstResult) {
-    throw new Error("Vision API returned no response blocks");
-  }
+  const parsedText = (payload?.ParsedResults || [])
+    .map((item) => item?.ParsedText || "")
+    .join("\n")
+    .trim();
 
-  if (firstResult.error?.message) {
-    throw new Error(firstResult.error.message);
-  }
+  return parsedText;
+}
 
-  return (
-    firstResult.fullTextAnnotation?.text ||
-    firstResult.textAnnotations?.[0]?.description ||
-    ""
-  );
+function imageTypeToFileType(imageType) {
+  const normalized = String(imageType || "").toLowerCase();
+  if (normalized === "image/jpeg") {
+    return "jpg";
+  }
+  if (normalized === "image/png") {
+    return "png";
+  }
+  if (normalized === "image/webp") {
+    return "webp";
+  }
+  return "";
 }
 
 function inferReceiptValues(ocrText) {

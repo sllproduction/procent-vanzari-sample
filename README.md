@@ -4,7 +4,7 @@ Aplicatie web mobile-first (iPhone Safari) cu:
 
 - login pe baza de parola + session cookie httpOnly;
 - upload de imagine zilnica (bon cash + bon card + total scris);
-- OCR prin Google Cloud Vision (doar sugestii);
+- OCR prin OCR.Space (doar sugestii);
 - confirmare manuala obligatorie inainte de salvare;
 - persistenta in Cloudflare D1;
 - istoric si rezumat lunar de comision.
@@ -14,7 +14,7 @@ Aplicatie web mobile-first (iPhone Safari) cu:
 - Cloudflare Workers
 - Cloudflare D1
 - Static assets servite de Worker (`public/`)
-- Google Cloud Vision API
+- OCR.Space API
 - HTML/CSS/vanilla JavaScript
 
 ## Structura proiect
@@ -31,7 +31,7 @@ Aplicatie web mobile-first (iPhone Safari) cu:
 
 1. Node.js 20+ instalat
 2. Cloudflare account
-3. Google Cloud project cu Vision API activat
+3. OCR.Space account + API key activ
 4. `wrangler` instalat global:
 
 ```bash
@@ -88,10 +88,10 @@ Seteaza secretul de semnare sesiune (valoare lunga random):
 wrangler secret put SESSION_SECRET
 ```
 
-Seteaza Google Vision API key:
+Seteaza OCR.Space API key:
 
 ```bash
-wrangler secret put GOOGLE_VISION_API_KEY
+wrangler secret put OCR_SPACE_API_KEY
 ```
 
 ## 5) Rulare locala
@@ -142,7 +142,7 @@ ENVIRONMENT = "development"
 ## 8) Security notes
 
 - Parola nu pleaca in frontend ca secret stocat.
-- `GOOGLE_VISION_API_KEY` ramane doar in Worker secret.
+- `OCR_SPACE_API_KEY` ramane doar in Worker secret.
 - Session cookie este semnat HMAC (`SESSION_SECRET`) si este `httpOnly`.
 - Rutele API state-changing au verificare de origin (basic CSRF mitigation).
 - Upload-ul este limitat la 8MB.
