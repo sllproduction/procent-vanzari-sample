@@ -204,6 +204,11 @@ p {
   gap: 4px;
 }
 
+.step-card h2,
+.calendar-card h2 {
+  font-size: 1.2rem;
+}
+
 .auth-card {
   width: min(460px, 100%);
   padding: 22px;
@@ -260,6 +265,7 @@ textarea {
   border-radius: var(--radius-md);
   padding: 12px;
   min-height: 46px;
+  font-size: 16px;
   background: #fff;
   color: var(--text);
   transition: border-color 140ms ease, box-shadow 140ms ease;
@@ -599,5 +605,171 @@ pre {
   .calendar-month-label {
     min-width: auto;
     flex: 1;
+  }
+}
+
+@media (max-width: 430px) {
+  .app-wrap,
+  .auth-wrap {
+    padding: 10px 10px calc(16px + env(safe-area-inset-bottom));
+  }
+
+  .app-wrap {
+    gap: 10px;
+  }
+
+  .card {
+    padding: 12px;
+    border-radius: 16px;
+  }
+
+  .topbar h1 {
+    font-size: 1.28rem;
+    margin: 6px 0 4px;
+  }
+
+  .muted {
+    font-size: 0.86rem;
+  }
+
+  .eyebrow {
+    font-size: 0.68rem;
+    padding: 4px 8px;
+  }
+
+  .stack {
+    gap: 8px;
+  }
+
+  .step-card h2,
+  .calendar-card h2 {
+    font-size: 1.06rem;
+  }
+
+  label {
+    font-size: 0.84rem;
+  }
+
+  input,
+  textarea {
+    min-height: 42px;
+    padding: 10px;
+  }
+
+  textarea {
+    min-height: 76px;
+  }
+
+  button {
+    min-height: 42px;
+    border-radius: 11px;
+    padding: 9px 12px;
+    font-size: 0.92rem;
+  }
+
+  .small-btn {
+    min-height: 34px;
+    min-width: 34px;
+  }
+
+  .selected-date-box {
+    padding: 8px 10px;
+    font-size: 0.84rem;
+  }
+
+  .selected-date-box strong {
+    font-size: 0.9rem;
+  }
+
+  .summary-grid {
+    gap: 8px;
+  }
+
+  .summary-item {
+    padding: 10px;
+  }
+
+  .summary-item h3 {
+    font-size: 0.76rem;
+    margin-bottom: 5px;
+  }
+
+  .summary-item p {
+    font-size: 0.96rem;
+  }
+
+  .calendar-head {
+    gap: 8px;
+  }
+
+  .calendar-weekdays,
+  .calendar-grid {
+    gap: 6px;
+  }
+
+  .calendar-weekdays span {
+    font-size: 0.66rem;
+  }
+
+  .calendar-empty,
+  .calendar-day {
+    min-height: 36px;
+  }
+
+  .calendar-day {
+    border-radius: 10px;
+    font-size: 0.88rem;
+  }
+
+  .day-dot {
+    width: 5px;
+    height: 5px;
+    margin-left: -2.5px;
+    bottom: 4px;
+  }
+
+  .inline-msg {
+    font-size: 0.82rem;
+    min-height: 18px;
+  }
+
+  .history-list {
+    gap: 8px;
+  }
+
+  .history-item {
+    padding: 9px;
+  }
+
+  .history-head {
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+  }
+
+  .history-values,
+  .history-notes {
+    font-size: 0.82rem;
+  }
+
+  .toast {
+    width: 94vw;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 0.86rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .topbar h1 {
+    font-size: 1.18rem;
+  }
+
+  .calendar-month-label {
+    font-size: 0.9rem;
+  }
+
+  .calendar-day {
+    min-height: 34px;
+    font-size: 0.82rem;
   }
 }
