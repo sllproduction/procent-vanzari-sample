@@ -141,6 +141,14 @@ async function handleApi(request, env, url) {
     return handleHistory(url, env);
   }
 
+  if (path === "/api/report/delete" && method === "POST") {
+    return handleDeleteReport(request, env);
+  }
+
+  if (path === "/api/history/clear" && method === "POST") {
+    return handleClearHistory(env);
+  }
+
   if (path === "/api/month-summary" && method === "GET") {
     return handleMonthSummary(url, env);
   }
@@ -376,6 +384,54 @@ async function handleHistory(url, env) {
   } catch (error) {
     console.error("History fetch error:", error);
     return json({ error: "Failed to load history" }, 500);
+  }
+}
+
+async function handleDeleteReport(request, env) {
+  const body = await safeReadJson(request);
+  const reportId = Number.parseInt(String(body?.id || ""), 10);
+
+  if (!Number.isFinite(reportId) || reportId <= 0) {
+    return json({ error: "Valid report id is required" }, 400);
+  }
+
+  try {
+    const result = await env.DB.prepare(
+      `
+      DELETE FROM reports
+      WHERE id = ?
+      `,
+    )
+      .bind(reportId)
+      .run();
+
+    const deleted = Number(result?.meta?.changes || 0);
+    if (deleted === 0) {
+      return json({ error: "Report not found" }, 404);
+    }
+
+    return json({ ok: true, deleted });
+  } catch (error) {
+    console.error("Delete report error:", error);
+    return json({ error: "Failed to delete report" }, 500);
+  }
+}
+
+async function handleClearHistory(env) {
+  try {
+    const result = await env.DB.prepare(
+      `
+      DELETE FROM reports
+      `,
+    ).run();
+
+    return json({
+      ok: true,
+      deleted: Number(result?.meta?.changes || 0),
+    });
+  } catch (error) {
+    console.error("Clear history error:", error);
+    return json({ error: "Failed to clear history" }, 500);
   }
 }
 

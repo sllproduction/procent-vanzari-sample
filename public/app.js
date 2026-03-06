@@ -7,6 +7,7 @@ const state = {
   busyAnalyze: false,
   busySave: false,
   busySettings: false,
+  busyHistoryAction: false,
   detected: {
     cash_detected: null,
     card_detected: null,
@@ -76,6 +77,7 @@ function bindEvents() {
     });
   });
   byId("settingsForm").addEventListener("submit", onSettingsSubmit);
+  byId("clearHistoryBtn").addEventListener("click", onClearHistoryClick);
   byId("logoutBtn").addEventListener("click", onLogoutClick);
 }
 
@@ -302,12 +304,15 @@ async function loadHistory() {
   const rows = Array.isArray(data.reports) ? data.reports : [];
   state.reports = rows;
   const list = byId("historyList");
+  const clearHistoryBtn = byId("clearHistoryBtn");
 
   if (rows.length === 0) {
     list.innerHTML = '<li class="history-empty">Nu exista rapoarte salvate inca.</li>';
+    clearHistoryBtn.disabled = true;
     renderCalendar();
     return;
   }
+  clearHistoryBtn.disabled = false;
 
   list.innerHTML = rows
     .map((row) => {
@@ -321,13 +326,86 @@ async function loadHistory() {
           <p class="history-values">
             Cash: ${formatMoney(row.cash_confirmed)} | Card: ${formatMoney(row.card_confirmed)}
           </p>
+          <div class="history-actions">
+            <button type="button" class="secondary history-delete-btn" data-report-id="${Number(row.id)}">Sterge raport</button>
+          </div>
           ${notes}
         </li>
       `;
     })
     .join("");
 
+  list.querySelectorAll(".history-delete-btn").forEach((button) => {
+    button.addEventListener("click", onDeleteReportClick);
+  });
+
   renderCalendar();
+}
+
+async function onDeleteReportClick(event) {
+  const button = event.currentTarget;
+  const reportId = Number.parseInt(button.dataset.reportId || "", 10);
+
+  if (!Number.isFinite(reportId) || reportId <= 0) {
+    showToast("Raport invalid pentru stergere.", "error");
+    return;
+  }
+
+  if (state.busyHistoryAction) {
+    return;
+  }
+
+  const confirmed = window.confirm("Sigur vrei sa stergi acest raport?");
+  if (!confirmed) {
+    return;
+  }
+
+  state.busyHistoryAction = true;
+  button.disabled = true;
+
+  try {
+    await apiRequest("/api/report/delete", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: reportId }),
+    });
+
+    showToast("Raport sters.", "success");
+    await Promise.all([loadHistory(), loadMonthSummary()]);
+  } catch (error) {
+    showToast(error.message || "Nu am putut sterge raportul.", "error");
+  } finally {
+    state.busyHistoryAction = false;
+  }
+}
+
+async function onClearHistoryClick() {
+  if (state.busyHistoryAction) {
+    return;
+  }
+
+  const confirmed = window.confirm("Sigur vrei sa stergi tot istoricul rapoartelor?");
+  if (!confirmed) {
+    return;
+  }
+
+  state.busyHistoryAction = true;
+  const clearBtn = byId("clearHistoryBtn");
+  setButtonLoading(clearBtn, true, "Se sterge...", "Sterge tot");
+
+  try {
+    const result = await apiRequest("/api/history/clear", {
+      method: "POST",
+    });
+
+    showToast(`Istoric sters (${result.deleted || 0} raport(e)).`, "success");
+    await Promise.all([loadHistory(), loadMonthSummary()]);
+  } catch (error) {
+    showToast(error.message || "Nu am putut sterge istoricul.", "error");
+  } finally {
+    state.busyHistoryAction = false;
+    setButtonLoading(clearBtn, false, "Se sterge...", "Sterge tot");
+  }
 }
 
 function syncCalendarToSummaryMonth() {

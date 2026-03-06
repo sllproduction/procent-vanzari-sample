@@ -486,6 +486,20 @@ button:disabled {
   gap: 10px;
 }
 
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.history-clear-btn {
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 10px;
+  font-size: 0.84rem;
+}
+
 .history-item {
   border: 1px solid #f1d7e2;
   border-radius: var(--radius-md);
@@ -510,6 +524,17 @@ button:disabled {
   margin-top: 6px;
   font-size: 0.88rem;
   line-height: 1.35;
+}
+
+.history-actions {
+  margin-top: 8px;
+}
+
+.history-delete-btn {
+  min-height: 34px;
+  padding: 0 10px;
+  border-radius: 10px;
+  font-size: 0.8rem;
 }
 
 .history-empty {
@@ -737,6 +762,17 @@ pre {
     gap: 8px;
   }
 
+  .history-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .history-clear-btn {
+    min-height: 34px;
+    font-size: 0.78rem;
+    padding: 0 10px;
+  }
+
   .history-item {
     padding: 9px;
   }
@@ -749,6 +785,12 @@ pre {
   .history-values,
   .history-notes {
     font-size: 0.82rem;
+  }
+
+  .history-delete-btn {
+    min-height: 30px;
+    font-size: 0.74rem;
+    padding: 0 8px;
   }
 
   .toast {
