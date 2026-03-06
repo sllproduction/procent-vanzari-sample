@@ -55,7 +55,6 @@ function bindEvents() {
   byId("cashInput").addEventListener("input", updateConsistencyHint);
   byId("cardInput").addEventListener("input", updateConsistencyHint);
   byId("totalInput").addEventListener("input", updateConsistencyHint);
-  byId("workDate").addEventListener("change", renderCalendar);
   byId("summaryMonth").addEventListener("change", () => {
     syncCalendarToSummaryMonth();
     renderCalendar();
@@ -90,7 +89,7 @@ async function requireSession() {
 
 function setDefaultDates() {
   const today = getTodayIsoDate();
-  byId("workDate").value = today;
+  setWorkDate(today);
   byId("summaryMonth").value = today.slice(0, 7);
   state.calendarCursor = parseMonthToDate(today.slice(0, 7));
 }
@@ -450,7 +449,7 @@ function renderCalendar() {
       const count = Number.parseInt(button.dataset.count || "0", 10);
       const total = Number.parseFloat(button.dataset.total || "0");
 
-      byId("workDate").value = date;
+      setWorkDate(date);
       renderCalendar();
 
       hint.className = "inline-msg";
@@ -658,6 +657,11 @@ function getTodayIsoDate() {
   const month = String(now.getMonth() + 1).padStart(2, "0");
   const day = String(now.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
+}
+
+function setWorkDate(date) {
+  byId("workDate").value = date;
+  byId("selectedDateLabel").textContent = date || "-";
 }
 
 function isValidMonthValue(value) {

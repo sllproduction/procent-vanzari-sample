@@ -37,8 +37,11 @@
       <h2>2) Confirma valorile si salveaza</h2>
 
       <form id="saveForm" class="stack">
-        <label for="workDate">Data</label>
-        <input id="workDate" type="date" required>
+        <div class="selected-date-box">
+          <span>Data selectata</span>
+          <strong id="selectedDateLabel">-</strong>
+        </div>
+        <input id="workDate" type="hidden" required>
 
         <label for="cashInput">Cash confirmat (RON)</label>
         <input id="cashInput" type="text" inputmode="decimal" placeholder="Ex: 250.50" required>
