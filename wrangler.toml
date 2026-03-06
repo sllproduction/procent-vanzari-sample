@@ -10,5 +10,5 @@ ENVIRONMENT = "production"
 [[d1_databases]]
 binding = "DB"
 database_name = "procent_vanzari_db"
-database_id = "REPLACE_WITH_D1_DATABASE_ID"
+database_id = "a31bb905-ad0d-45c0-b9d2-e6a3f10c4dc6"
 migrations_dir = "migrations"
