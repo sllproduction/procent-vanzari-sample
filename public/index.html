@@ -8,15 +8,16 @@
 </head>
 <body data-page="app">
   <main class="app-wrap">
-    <header class="topbar">
-      <div>
+    <header class="card topbar topbar-card">
+      <div class="topbar-copy">
+        <p class="eyebrow">Dashboard zilnic</p>
         <h1>Raport zilnic barista</h1>
-        <p class="muted">Incarca o poza, verifica valorile, apoi confirma salvarea.</p>
+        <p class="muted">Incarca poza, verifica valorile propuse si confirma manual inainte de salvare.</p>
       </div>
       <button id="logoutBtn" class="secondary">Logout</button>
     </header>
 
-    <section class="card stack">
+    <section class="card stack step-card">
       <h2>1) Upload poza si analiza OCR</h2>
       <label for="imageInput">Poza zilei (bon cash + bon card + total scris)</label>
       <input id="imageInput" type="file" accept="image/*" capture="environment">
@@ -32,7 +33,7 @@
       </details>
     </section>
 
-    <section class="card stack">
+    <section class="card stack step-card">
       <h2>2) Confirma valorile si salveaza</h2>
 
       <form id="saveForm" class="stack">
@@ -57,7 +58,7 @@
       </form>
     </section>
 
-    <section class="card stack">
+    <section class="card stack step-card">
       <h2>3) Rezumat lunar</h2>
 
       <label for="summaryMonth">Luna</label>
