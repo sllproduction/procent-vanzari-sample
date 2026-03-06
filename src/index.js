@@ -66,18 +66,26 @@ async function handlePageRoutes(request, env, url) {
   const path = normalizePath(url.pathname);
   const authenticated = await isAuthenticated(request, env);
 
-  if (path === "/login" || path === "/login.html") {
+  if (path === "/login.html") {
+    return redirect("/login", 307);
+  }
+
+  if (path === "/login") {
     if (authenticated) {
       return redirect("/");
     }
-    return serveAsset(request, env, "/login.html");
+    return serveAsset(request, env, "/login");
   }
 
-  if (path === "/" || path === "/index.html") {
+  if (path === "/index.html") {
+    return redirect("/", 307);
+  }
+
+  if (path === "/") {
     if (!authenticated) {
       return redirect("/login");
     }
-    return serveAsset(request, env, "/index.html");
+    return serveAsset(request, env, "/");
   }
 
   if (path === "/app.js" && !authenticated) {
